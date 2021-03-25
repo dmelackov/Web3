@@ -24,10 +24,22 @@ def load_user(user_id):
 @app.route('/')
 @app.route('/index')
 def index():
+    jobs = []
+    session = db_session.create_session()
+    for i in session.query(Jobs).all():
+        jobs.append((i.job,
+                     i.leader.name,
+                     i.leader.surname,
+                     i.work_size,
+                     i.collaborators,
+                     i.if_finished))
+    session.close()
     params = {}
-    params["title"] = "Пустота"
+    print(jobs)
+    params["title"] = "Журнал работ"
     params["static_css"] = url_for('static', filename="css/")
     params["static_img"] = url_for('static', filename="img/")
+    params["jobs"] = jobs
     return render_template('index.html', **params)
 
 

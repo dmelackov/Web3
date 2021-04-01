@@ -20,8 +20,9 @@ body {
     margin-right: auto;
 }
 
-.works>h4 {
+.jobLabel>h4 {
     text-align: left;
+    width: 100px;
 }
 
 .container-left {
@@ -107,4 +108,13 @@ form.login_form {
 
 #addjob.btn {
     margin-top: 10px;
+}
+
+.jobLabel>h4,
+.jobLabel>a {
+    float: left;
+}
+
+.jobLabel>a {
+    margin-left: 5px;
 }

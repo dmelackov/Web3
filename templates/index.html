@@ -3,8 +3,16 @@
 <div class="center">
     <h3>Work log</h3>
     <div class="works">
+
+
+
         {% for i in jobs %}
-        <h4>Action {{loop.index}}</h4>
+        <div class="jobLabel">
+            <h4>Action {{loop.index}}</h4>
+            {% if i[6] %}
+            <a class="btn btn-danger" href="/job_delete/{{ i[7] }}">Delete</a>
+            <a class="btn btn-warning" href="/job/{{ i[7] }}">Edit</a> {% endif %}
+        </div>
         <table>
             <tr class="title">
                 <th>Title of activity</th>

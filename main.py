@@ -1,11 +1,12 @@
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
-from flask import Flask, url_for, request, render_template, redirect
+from flask import Flask, url_for, request, render_template, redirect, abort
 import datetime
-from flask_login import LoginManager, login_manager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_manager, login_required, login_user, logout_user, current_user
 from forms.user import LoginForm, RegisterForm
 from forms.job import JobAddForm
+
 db_session.global_init("db/blogs.db")
 
 app = Flask(__name__)
@@ -32,7 +33,9 @@ def index():
                      i.leader.surname,
                      i.work_size,
                      i.collaborators,
-                     i.if_finished))
+                     i.if_finished,
+                     (current_user.id == 1 or (current_user.id == i.leader.id) if current_user.is_authenticated else False),
+                     i.id))
     session.close()
     params = {}
     print(jobs)
@@ -116,7 +119,7 @@ def addJob():
     form = JobAddForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        if not db_sess.query(Jobs).filter(Jobs.team_leader == form.teamLeader.data).first():
+        if not db_sess.query(User).filter(User.id == form.teamLeader.data).first():
             return render_template('addJob.html', **params,
                                    form=form,
                                    message="Такого team leader нет")
@@ -131,6 +134,60 @@ def addJob():
         db_sess.commit()
         return redirect('/')
     return render_template('addJob.html', **params, form=form)
+
+
+@app.route('/job_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    job = db_sess.query(Jobs).filter(Jobs.id == id).first()
+    if job:
+        if current_user.id != job.team_leader and current_user.id != 1:
+            return "Нет прав"
+        db_sess.delete(job)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
+
+
+@app.route('/job/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    params = {}
+    params["title"] = "Редактирование работы"
+    params["static_css"] = url_for('static', filename="css/")
+    params["static_img"] = url_for('static', filename="img/")
+    db_sess = db_session.create_session()
+    job = db_sess.query(Jobs).filter(Jobs.id == id).first()
+    if not job:
+        abort(404)
+    if current_user.id != job.team_leader and current_user.id != 1:
+        return "Нет прав"
+    form = JobAddForm()
+    if request.method == "GET":
+        form.teamLeader.data = job.team_leader
+        form.title.data = job.job
+        form.workSize.data = job.work_size
+        form.collaborators.data = job.collaborators
+        form.complete.data = job.if_finished
+    if form.validate_on_submit():
+        if not db_sess.query(User).filter(User.id == form.teamLeader.data).first():
+            return render_template('addJob.html', **params,
+                                   form=form,
+                                   message="Такого team leader нет")
+        job.team_leader = form.teamLeader.data
+        job.job = form.title.data
+        job.work_size = form.workSize.data
+        job.collaborators = form.collaborators.data
+        job.if_finished = form.complete.data
+        db_sess.commit()
+        return redirect('/')
+
+    return render_template('addJob.html',
+                           **params,
+                           form=form
+                           )
 
 
 if __name__ == '__main__':

@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %}
+<h1>Addign a Job</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.title.label }}<br> {{ form.title(class="form-control", type="title") }}<br> {% for error in form.title.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.teamLeader.label }}<br> {{ form.teamLeader(class="form-control", type="teamLeader") }}<br> {% for error in form.teamLeader.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.workSize.label }}<br> {{ form.workSize(class="form-control", type="teamLeader") }}<br> {% for error in form.workSize.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.collaborators.label }}<br> {{ form.collaborators(class="form-control") }}<br> {% for error in form.collaborators.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.complete.label }}<br> {{ form.complete(class="form-control") }}<br> {% for error in form.complete.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}

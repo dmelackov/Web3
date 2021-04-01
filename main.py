@@ -5,7 +5,7 @@ from flask import Flask, url_for, request, render_template, redirect
 import datetime
 from flask_login import LoginManager, login_manager, login_required, login_user, logout_user
 from forms.user import LoginForm, RegisterForm
-
+from forms.job import JobAddForm
 db_session.global_init("db/blogs.db")
 
 app = Flask(__name__)
@@ -74,12 +74,12 @@ def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация',
+            return render_template('register.html', **params,
                                    form=form,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('register.html', title='Регистрация',
+            return render_template('register.html', **params,
                                    form=form,
                                    message="Такой пользователь уже есть")
         user = User(
@@ -103,6 +103,34 @@ def reqister():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.route('/addjob', methods=['GET', 'POST'])
+@login_required
+def addJob():
+    params = {}
+    params["title"] = "Добавление работы"
+    params["static_css"] = url_for('static', filename="css/")
+    params["static_img"] = url_for('static', filename="img/")
+
+    form = JobAddForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        if not db_sess.query(Jobs).filter(Jobs.team_leader == form.teamLeader.data).first():
+            return render_template('addJob.html', **params,
+                                   form=form,
+                                   message="Такого team leader нет")
+        job = Jobs(
+            team_leader=form.teamLeader.data,
+            job=form.title.data,
+            work_size=form.workSize.data,
+            collaborators=form.collaborators.data,
+            if_finished=form.complete.data
+        )
+        db_sess.add(job)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('addJob.html', **params, form=form)
 
 
 if __name__ == '__main__':

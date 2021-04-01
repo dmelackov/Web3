@@ -9,9 +9,9 @@
         {% for i in jobs %}
         <div class="jobLabel">
             <h4>Action {{loop.index}}</h4>
-            {% if i[6] %}
-            <a class="btn btn-danger" href="/job_delete/{{ i[7] }}">Delete</a>
-            <a class="btn btn-warning" href="/job/{{ i[7] }}">Edit</a> {% endif %}
+            {% if current_user.is_authenticated %} {% if current_user.id == 1 or current_user.id == i.leader.id %}
+            <a class="btn btn-danger" href="/job_delete/{{ i.id }}">Delete</a>
+            <a class="btn btn-warning" href="/job/{{ i.id }}">Edit</a> {% endif %} {% endif %}
         </div>
         <table>
             <tr class="title">
@@ -22,15 +22,15 @@
                 <th>is finished</th>
             </tr>
             <tr class="data">
-                <td class="activity">{{ i[0] }}</td>
-                <td class="leader">{{ i[1] }} {{i[2]}}</td>
-                <td class="duration">{{ i[3] }} hours</td>
-                <td class="collab">{{ i[4] }}</td>
-                <td class="finished {% if i[5] %}
+                <td class="activity">{{ i.job }}</td>
+                <td class="leader">{{ i.leader.name }} {{ i.leader.surname }}</td>
+                <td class="duration">{{ i.work_size }} hours</td>
+                <td class="collab">{{ i.collaborators }}</td>
+                <td class="finished {% if i.if_finished %}
                     yes
                 {% else %}
                     no
-                {% endif %}">{% if i[5] %} Is finished {% else %} Is not finished {% endif %}</td>
+                {% endif %}">{% if i.if_finished %} Is finished {% else %} Is not finished {% endif %}</td>
             </tr>
         </table>
         {% endfor %}

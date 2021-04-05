@@ -12,18 +12,21 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-light bg-light">
+        <nav class="navbar navbar-light">
             <a class="navbar-brand" href="/">
                 <h1>Миссия Колонизация Марса</h1>
                 <h4>И на Марсе будут яблони цвести!</h4>
             </a>
-            {% if current_user.is_authenticated %}
-            <a class="navbar-brand" href="/logout">{{ current_user.name }}</a> {% else %}
-            <p>
-                <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
-                <a class="btn btn-success" href="/login">Войти</a>
-            </p>
-            {% endif %}
+            <div class="userPanel">
+                {% if current_user.is_authenticated %}
+                <a class="navbar-brand" href="/logout">{{ current_user.name }}</a> {% else %}
+                <p>
+                    <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+                    <a class="btn btn-success" href="/login">Войти</a>
+                </p>
+                {% endif %}
+            </div>
+
         </nav>
     </header>
     <div class="wraper">

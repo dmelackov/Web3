@@ -1,4 +1,4 @@
-from data import db_session
+from data import db_session, api
 from data.users import User
 from data.jobs import Jobs
 from flask import Flask, url_for, request, render_template, redirect, abort
@@ -11,6 +11,8 @@ db_session.global_init("db/blogs.db")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+app.register_blueprint(api.blueprint)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -181,4 +183,4 @@ def edit_news(id):
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='0.0.0.0')

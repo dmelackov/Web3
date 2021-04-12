@@ -1,6 +1,5 @@
 import flask
 from flask import jsonify, request
-
 from . import db_session
 from .users import User
 from .jobs import Jobs
@@ -10,7 +9,6 @@ blueprint = flask.Blueprint(
     __name__,
     template_folder='templates'
 )
-
 
 @blueprint.route('/api/jobs')
 def get_jobs():

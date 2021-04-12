@@ -3,9 +3,11 @@ from data.users import User
 from data.jobs import Jobs
 from flask import Flask, url_for, request, render_template, redirect, abort
 import datetime
+from flask_restful import abort, Api
 from flask_login import LoginManager, login_manager, login_required, login_user, logout_user, current_user
 from forms.user import LoginForm, RegisterForm
 from forms.job import JobAddForm
+from data import jobs_resource, users_resource
 
 db_session.global_init("db/blogs.db")
 
@@ -16,6 +18,14 @@ app.register_blueprint(api.blueprint)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+api = Api(app)
+
+api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
+api.add_resource(jobs_resource.JobResource, '/api/v2/jobs/<int:job_id>')
+
+api.add_resource(users_resource.UserListResource, '/api/v2/users')
+api.add_resource(users_resource.UserResource, '/api/v2/users/<int:user_id>')
 
 
 @login_manager.user_loader
